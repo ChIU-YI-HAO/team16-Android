@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">My Application</string>
+    <string-array name="spinner">
+        <item>以上</item>
+        <item>以下</item>
+    </string-array>
 </resources>
