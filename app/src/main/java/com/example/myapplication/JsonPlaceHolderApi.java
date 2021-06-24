@@ -20,6 +20,10 @@ public interface JsonPlaceHolderApi {
     Call<List<Post>>getPosts(@Path("username") String username);
     @GET("dislikeposts/{username}")
     Call<List<Post>>getdislikePosts(@Path("username") String username);
+    @GET("posts/delete/{username}/{url}")
+    Call<List<Post>>deletePost(
+            @Path("username") String username,
+            @Path("url")String url);
     @GET("rates/{req}/{percent}/{upordown}")
     Call<List<Rate>>searchrate(
             @Path("req") String req,

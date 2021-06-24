@@ -10,12 +10,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -26,21 +28,25 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity4 extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     String require,upordown;
-    private TextView textViewResult;
     private JsonPlaceHolderApi jsonPlaceHolderApi;
     private TextView textView;
     private ProgressBar progressBar;
     private SeekBar seekBar;
+    ListView listView;
+    ArrayList<String> arrayList=new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setTitle("網站評分系統");
         setContentView(R.layout.activity_main4);
         Button button6 = findViewById(R.id.button6);
+        Button button9 = findViewById(R.id.button9);
         Button search = findViewById(R.id.button8);
         EditText input = findViewById(R.id.textInputEditText1);
-        textViewResult = findViewById(R.id.textView5);
         Spinner spinner = findViewById(R.id.spinner);
+        listView = (ListView) findViewById(R.id.listview1);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.spinner, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -52,7 +58,7 @@ public class MainActivity4 extends AppCompatActivity implements AdapterView.OnIt
                 .build();
         jsonPlaceHolderApi = retrofit.create(JsonPlaceHolderApi.class);
 
-        //getrate();
+        getrate();
         button6.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -60,10 +66,15 @@ public class MainActivity4 extends AppCompatActivity implements AdapterView.OnIt
                 startActivity(intent);
             }
         });
+        button9.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getrate();
+            }
+        });
         textView = (TextView) findViewById(R.id.textView6);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         seekBar = (SeekBar) findViewById(R.id.seekBar);
-
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -102,24 +113,22 @@ public class MainActivity4 extends AppCompatActivity implements AdapterView.OnIt
             @Override
             public void onResponse(Call<List<Rate>> call, Response<List<Rate>> response) {
                 if (!response.isSuccessful()) {
-                    textViewResult.setText("code" + response.code());
                     return;
                 }
                 List<Rate> rates =response.body();
+                arrayList.clear();
                 for (Rate rate : rates) {
-                    String content = "";
-                    content += "ID: " + rate.getId() + "\n";
-                    content += "Url: " + rate.getUrl() + "\n";
-                    content += "Likecount: " + rate.getLikecount() + "\n";
-                    content += "Dislikecount: " + rate.getDislikecount() + "\n";
-                    content += "Rate: " + rate.getRate() + "\n\n";
-                    textViewResult.append(content);
+                    arrayList.add("網址："+rate.getUrl()+"\n"+"評價："+rate.getRate()+"%");
                 }
+                if (arrayList.isEmpty())
+                {
+                    Toast.makeText(MainActivity4.this,"查無結果",Toast.LENGTH_SHORT).show();
+                }
+                ArrayAdapter arrayAdapter=new ArrayAdapter(MainActivity4.this,android.R.layout.simple_list_item_1,arrayList);
+                listView.setAdapter(arrayAdapter);
             }
-
             @Override
             public void onFailure(Call<List<Rate>> call, Throwable t) {
-                textViewResult.setText(t.getMessage());
             }
         });
 
@@ -131,23 +140,19 @@ public class MainActivity4 extends AppCompatActivity implements AdapterView.OnIt
             @Override
             public void onResponse(Call<List<Rate>> call, Response<List<Rate>> response) {
                 if (!response.isSuccessful()) {
-                    textViewResult.setText("Code: " + response.code());
                     return;
                 }
                 List<Rate> rates = response.body();
+                arrayList.clear();
                 for (Rate rate : rates) {
-                    String content = "";
-                    content += "ID: " + rate.getId() + "\n";
-                    content += "url: " + rate.getUrl() + "\n";
-                    content += "likecount: " + rate.getLikecount() + "\n";
-                    content += "dislikecount: " + rate.getDislikecount() + "\n";
-                    content += "Rate: " + rate.getRate() + "\n\n";
-                    textViewResult.append(content);
+                    arrayList.add("網址："+rate.getUrl()+"\n"+"評價："+rate.getRate()+"%");
                 }
+                ArrayAdapter arrayAdapter=new ArrayAdapter(MainActivity4.this,android.R.layout.simple_list_item_1,arrayList);
+                listView.setAdapter(arrayAdapter);
             }
             @Override
             public void onFailure(Call<List<Rate>> call, Throwable t) {
-                textViewResult.setText(t.getMessage());
+
             }
         });
     }

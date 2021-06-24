@@ -30,15 +30,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setTitle("網站評分系統");
         setContentView(R.layout.activity_main);
         Button like = findViewById(R.id.button);
         Button dislike = findViewById(R.id.button7);
-        Button button1 = findViewById(R.id.button1);
-        Button button3 = findViewById(R.id.button3);
-        Button button5 = findViewById(R.id.button5);
+        Button tolikelist = findViewById(R.id.button1);
+        Button todislikelist = findViewById(R.id.button3);
+        Button tosearch = findViewById(R.id.button5);
         textViewResult = findViewById(R.id.textView3);
         EditText input =  findViewById(R.id.textInputEditText2);
-
         String android_id = Settings.Secure.getString(this.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
 
@@ -48,21 +48,21 @@ public class MainActivity extends AppCompatActivity {
                 .build();
         jsonPlaceHolderApi = retrofit.create(JsonPlaceHolderApi.class);
 
-        button1.setOnClickListener(new View.OnClickListener() {
+        tolikelist.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, MainActivity2.class);
                 startActivity(intent);
             }
         });
-        button3.setOnClickListener(new View.OnClickListener() {
+        todislikelist.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, MainActivity3.class);
                 startActivity(intent);
             }
         });
-        button5.setOnClickListener(new View.OnClickListener() {
+        tosearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, MainActivity4.class);
@@ -76,10 +76,12 @@ public class MainActivity extends AppCompatActivity {
                 if (url.matches("")) {
                     Toast.makeText(MainActivity.this, "你沒輸入任何網址", Toast.LENGTH_SHORT).show();
                 }
-                else{
+                else if (url.contains(".com")||url.contains(".edu")||url.contains(".org")||url.contains(".net")||url.contains(".gov")||url.contains(".mil")){
                     status="like";
                     createPost(android_id,url,status);
-                    Toast.makeText(MainActivity.this, "按讚成功", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    Toast.makeText(MainActivity.this, "你輸入的不是一個網址", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -90,10 +92,12 @@ public class MainActivity extends AppCompatActivity {
                 if (url.matches("")) {
                     Toast.makeText(MainActivity.this, "你沒輸入任何網址", Toast.LENGTH_SHORT).show();
                 }
-                else{
+                else if (url.contains(".com")||url.contains(".edu")||url.contains(".org")||url.contains(".net")||url.contains(".gov")||url.contains(".mil")){
                     status="dislike";
                     createPost(android_id,url,status);
-                    Toast.makeText(MainActivity.this, "倒讚成功", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    Toast.makeText(MainActivity.this, "你輸入的不是一個網址", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -106,13 +110,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 if (!response.isSuccessful()) {
-                    textViewResult.setText("Code: " + response.code());
                     return;
                 }
-                User postResponse = response.body();
-                String content = "";
-                content += postResponse.getId();
-                textViewResult.setText(content);
             }
             @Override
             public void onFailure(Call<User> call, Throwable t) {
@@ -127,18 +126,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Post> call, Response<Post> response) {
                 if (!response.isSuccessful()) {
-                    textViewResult.setText("Code: " + response.code());
                     return;
                 }
-                Post postResponse = response.body();
-                String content = "";
-                content += "Code: " + response.code() + "\n";
-                content += "ID: " + postResponse.getId() + "\n";
-                content += "User ID: " + postResponse.getUserid() + "\n";
-                content += "User ID: " + postResponse.getUrl() + "\n";
-                content += "Title: " + postResponse.getStatus() + "\n";
-                textViewResult.setText(content);
-                Toast.makeText(MainActivity.this, "加入成功", Toast.LENGTH_SHORT).show();
+                if (status.equals("like")){
+                    Toast.makeText(MainActivity.this, "按讚成功", Toast.LENGTH_SHORT).show();
+                }
+                else
+                    Toast.makeText(MainActivity.this, "倒讚成功", Toast.LENGTH_SHORT).show();
+
             }
             @Override
             public void onFailure(Call<Post> call, Throwable t) {
